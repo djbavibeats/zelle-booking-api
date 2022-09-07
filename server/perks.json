@@ -1,0 +1,75 @@
+[
+    {
+        "perkName": "shakey graves",
+        "signups": 0,
+        "maxSignups": 1,
+        "users": []
+    },
+    {
+        "perkName": "courtney barnett",
+        "signups": 0,
+        "maxSignups": 1,
+        "users": []
+    },
+    {
+        "perkName": "st vincent",
+        "signups": 0,
+        "maxSignups": 1,
+        "users": []
+    },
+    {
+        "perkName": "caamp",
+        "signups": 0,
+        "maxSignups": 1,
+        "users": []
+    },
+    {
+        "perkName": "fred minnick - thursday",
+        "signups": 0,
+        "maxSignups": 1,
+        "users": []
+    },
+    {
+        "perkName": "fred minnick - friday",
+        "signups": 0,
+        "maxSignups": 1,
+        "users": []
+    },
+    {
+        "perkName": "fred minnick - saturday",
+        "signups": 0,
+        "maxSignups": 1,
+        "users": []
+    },
+    {
+        "perkName": "fred minnick - sunday",
+        "signups": 0,
+        "maxSignups": 1,
+        "users": []
+    },
+    
+    {
+        "perkName": "anthony lamas - thursday",
+        "signups": 0,
+        "maxSignups": 9999,
+        "users": []
+    },
+    {
+        "perkName": "anthony lamas - friday",
+        "signups": 0,
+        "maxSignups": 9999,
+        "users": []
+    },
+    {
+        "perkName": "anthony lamas - saturday",
+        "signups": 0,
+        "maxSignups": 9999,
+        "users": []
+    },
+    {
+        "perkName": "anthony lamas - sunday",
+        "signups": 0,
+        "maxSignups": 9999,
+        "users": []
+    }
+]

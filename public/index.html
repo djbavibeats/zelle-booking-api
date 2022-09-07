@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zelle | Bourbon & Beyond</title>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/vue-the-mask@0.11.1/dist/vue-the-mask.js"></script>
+    <!-- <script src="./app.js"></script> -->
+</head>
+<body>
+    <style>
+        /* Custom Fonts */
+        @font-face {
+            font-family : Zelle;
+            src : url('./fonts/ZelleSans-1.ttf');
+        }
+
+        html * { font-family: 'Zelle', sans-serif !important; }
+        body {
+            background: url('./images/background.jpg');
+            background-size: cover;
+            min-height: 100vh;
+        }
+
+        #root {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: row;
+            margin-top: 50px;
+            margin-bottom: 50px;
+            /* align-items: center;         */
+        }
+
+        .background-overlay {
+            background: #6d1ed4;
+            opacity: .5;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 0;
+        }
+
+        .content-wrapper {
+            /* position: relative; */
+            z-index: 1;
+            margin: 0 auto;
+        }
+
+        .form-instructions, .perk-confirmation-text {
+            font-size: 20px;
+            color: white;
+            font-weight: 400;
+            text-align: center;
+        }
+
+        .perk-form-wrapper  .form-instructions {
+            flex: .33;
+            text-align: center;
+        }
+
+        .auth-form-wrapper, .perk-form-wrapper {
+            display: flex;
+            flex-direction: column;
+            margin: 0 auto;
+            min-width: 300px;
+        }
+
+        .auth-form-wrapper {
+            max-width: 500px;
+        }
+
+        .perk-form-wrapper {
+            max-width: 1080px;
+        }
+
+
+        .auth-form-wrapper input {
+            margin-bottom: 15px;
+            padding: 15px 15px;
+            border: none;
+            border-radius: 7px;
+            color: black;
+        }
+
+        .auth-form-wrapper input::placeholder {
+            color: black;
+        }
+
+        .auth-form-wrapper .primary-button, .perk-form-wrapper .primary-button {
+            background : #f4f471;
+            color : #6d1ed4;
+            border: none;
+            border-radius: 7px;
+            padding: 15px 0px;
+            width: 100%;
+            font-weight: 900;
+        }
+
+        .auth-form-wrapper button:hover, .perk-form-wrapper button:hover {
+            cursor: pointer;
+            background : #571CB6;
+            color : #ffffff;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-group label {
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .radio-buttons-group {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .radio-group {
+            margin-right: 15px;
+        }
+
+        .perk-groups {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .perk-group-wrapper {
+            background: #6d1ed4;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 7px;
+            flex: .33;
+        }
+
+        .perk-image-wrappe {
+            display: flex;
+            justify-content: center;
+        }
+
+        .perk-image {
+            height: 300px;
+            width: auto;
+        }
+
+        .perk-group-wrapper.one {
+            margin-right: 7.5px;
+        }
+
+        .perk-group-wrapper.two {
+            margin-left: 7.5px;
+            margin-right: 7.5px;
+        }
+
+        .perk-group-wrapper.three {
+            margin-left: 7.5px;
+        }
+
+        .perk-group-wrapper h3 {
+            color: white;
+            margin-top: 0;
+            min-height: 75px;
+            text-align: center;
+        }
+        .perk-buttons-wrapper {
+            display: flex;
+            flex-direction: column;
+        }
+
+
+        .secondary-button {
+            background : #f4f471;
+            color : #6d1ed4;
+            border: none;
+            border-radius: 7px;
+            padding: 15px 0px;
+            margin-bottom: 10px;
+            font-weight: 900;
+        }
+
+        .logo-wrapper {
+            display: flex; 
+            align-items: center;
+            margin: 0 auto;    
+            flex-direction: column;      
+        }
+
+        .logo-wrapper .bourbon-and-beyond-logo {
+            width: 250px;
+            margin-bottom: 25px
+        }
+
+        .logo-wrapper .rocks-room-logo {
+            width: 350px;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+        }
+
+        .header-line {
+            flex: .33;
+            height: 1px;
+            background: white;
+        }
+
+        @media only screen and (max-width: 768px) {
+            .perk-groups {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <div id="root">
+        <div class="background-overlay"></div>
+        <div class="content-wrapper">
+            <div class="logo-wrapper">
+                <img class="bourbon-and-beyond-logo" src="./images/bourbon-and-beyond-logo.png" />
+            </div>
+            <div class="logo-wrapper">
+                <img class="rocks-room-logo" src="./images/rocks-room-logo.png" />
+            </div>
+            <auth-form v-if="step === 'auth'"></auth-form>
+            <perk-form v-else-if="step === 'perk'" transactions="user.transactions"></perk-form>
+            <confirmation-message v-else-if="step === 'confirmation'"></confirmation-message>
+        </div>
+    </div>
+    <script>
+        Vue.component('ConfirmationMessage', {
+            template: `<div class="confirmation-message-wrapper">
+                <h1>You're all set!</h1>
+                <p>You've been confirmed for the following experience:</p>
+                <h3>{{ perkString }}</h3>
+            </div>`,
+            data() {
+                return {
+                    perkString: ''
+                }
+            },
+            mounted() {
+                let perkArray = this.$root.user.perk.split(' ')
+
+                for (const word of perkArray) {
+                    let capital = word.charAt(0).toUpperCase() + word.slice(1)
+                    this.perkString = this.perkString + ' ' + capital
+                }
+            }
+        })
+        Vue.component('PerkForm', {
+            template: `<div class="perk-form-wrapper">
+                <div class="section-header">
+                    <div class="header-line"></div>
+                    <p class="form-instructions">Here are the perks you've unlocked:</p>
+                    <div class="header-line"></div>
+                </div>
+                <div v-if="transactions >= 4">
+                    <div class="perk-groups">
+                        <div class="perk-group-wrapper one" v-if="transactions >= 8">
+                            <div class="perk-image-wrapper">
+                                <img class="perk-image" src="./images/artists-perk-image.png" />
+                            </div>
+                            <h3>Access to 1 Exclusive Perfromance with Shakey Graves, Courtney Barnett, St. Vincent, OR Caamp</h3>
+                            <div class="perk-buttons-wrapper">
+                                <button class="secondary-button" v-on:click="updatePerk('shakey graves')">SHAKEY GRAVES | THURS 3:15 - 3:45 ET</button>
+                                <button class="secondary-button" v-on:click="updatePerk('courtney barnett')">COURTNEY BARNETT | FRI 3:15 - 3:45 ET</button>
+                                <button class="secondary-button" v-on:click="updatePerk('st vincent')">ST. VINCENT | SAT 3:15 - 3:45 ET</button>
+                                <button class="secondary-button" v-on:click="updatePerk('caamp')">CAAMP | SUN 3:30 - 4:00 ET</button>
+                            </div>
+                        </div>
+                        <div class="perk-group-wrapper two" v-if="transactions >= 6">
+                            <div class="perk-image-wrapper">
+                                <img class="perk-image" src="./images/fred-minnick-perk-image.png" />
+                            </div>
+                            <h3>Fred Minnick's Blind Bourbon Experience</h3>
+                            <div class="perk-buttons-wrapper">
+                                <button class="secondary-button" v-on:click="updatePerk('fred minnick - thursday')">THURS 12:30 - 2:00PM ET</button>
+                                <button class="secondary-button" v-on:click="updatePerk('fred minnick - friday')">FRI 12:30 - 2:00PM ET</button>
+                                <button class="secondary-button" v-on:click="updatePerk('fred minnick - saturday')">SAT 12:30 - 2:00PM ET</button>
+                                <button class="secondary-button" v-on:click="updatePerk('fred minnick - sunday')">SUN 12:30 - 2:00PM ET</button>
+                            </div>
+                        </div>
+                        <div class="perk-group-wrapper three">
+                            <div class="perk-image-wrapper">
+                                <img class="perk-image" src="./images/anthony-llamas-perk-image.png" />
+                            </div>
+                            <h3>4-Course Dining Experience by Chef Anthony Lamas</h3>
+                            <div class="perk-buttons-wrapper">
+                                <button class="secondary-button" v-on:click="updatePerk('anthony lamas - thursday')">THURS 5:30 - 7:30PM ET</button>
+                                <button class="secondary-button" v-on:click="updatePerk('anthony lamas - friday')">FRI 5:30 - 7:30PM ET</button>
+                                <button class="secondary-button" v-on:click="updatePerk('anthony lamas - saturday')">SAT 5:30 - 7:30PM ET</button>
+                                <button class="secondary-button" v-on:click="updatePerk('anthony lamas - sunday')">SUN 5:30 - 7:30PM ET</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="perk-confirmation-text-wrapper">
+                        <p class="perk-confirmation-text">Your chosen perk is: {{ perkText }}</p>
+                    </div>
+                    <button class="primary-button" v-on:click="confirmPerk()">CONFRIM</button>
+                </div>
+                <div class="perk-group-wrapper" v-else-if="transactions < 4">
+                    <h3>You've unlocked expedited entry to Bourbon and Beyond!</h3>
+                </div>
+            </div>`,
+            methods: {
+                updatePerk(perk) {
+                    this.perk = perk
+                    switch(perk) {
+                        case ('shakey graves'):
+                            this.perkText = 'SHAKEY GRAVES | THURS 3:15 - 3:45 ET'
+                            break
+                        case ('courtney barnett'):
+                            this.perkText = 'COURTNEY BARNETT | FRI 3:15 - 3:45 ET'
+                            break
+                        case ('st vincent'):
+                            this.perkText = 'ST. VINCENT | SAT 3:15 - 3:45 ET'
+                            break
+                        case ('caamp'):
+                            this.perkText = 'CAAMP | SUN 3:30 - 4:00 ET'
+                            break
+                        case('fred minnick - thursday'):
+                            this.perkText = `FRED MINNICK'S BLIND BOURBON EXPERIENCE | THURS 12:30 - 2:00PM ET`
+                            break
+                        case('fred minnick - friday'):
+                            this.perkText = `FRED MINNICK'S BLIND BOURBON EXPERIENCE | FRI 12:30 - 2:00PM ET`
+                            break
+                        case('fred minnick - saturday'):
+                            this.perkText = `FRED MINNICK'S BLIND BOURBON EXPERIENCE | SAT 12:30 - 2:00PM ET`
+                            break
+                        case('fred minnick - sunday'):
+                            this.perkText = `FRED MINNICK'S BLIND BOURBON EXPERIENCE | SUN 12:30 - 2:00PM ET`
+                            break
+                        case('anthony lamas - thursday'):
+                            this.perkText = `4-COURSE DINING EXPERIENCE BY CHEF ANTHONY LAMAS | THURS 5:30 - 7:30PM ET`
+                            break
+                        case('anthony lamas - friday'):
+                            this.perkText = `4-COURSE DINING EXPERIENCE BY CHEF ANTHONY LAMAS | FRI 5:30 - 7:30PM ET`
+                            break
+                        case('anthony lamas - saturday'):
+                            this.perkText = `4-COURSE DINING EXPERIENCE BY CHEF ANTHONY LAMAS | SAT 5:30 - 7:30PM ET`
+                            break
+                        case('anthony lamas - sunday'):
+                            this.perkText = `4-COURSE DINING EXPERIENCE BY CHEF ANTHONY LAMAS | SUN 5:30 - 7:30PM ET`
+                            break
+                        default:
+                            this.perkText = 'PLEASE PICK A PERK'
+                            break
+                    }
+                },
+                confirmPerk() {
+                    console.log(this.perk)
+                    this.$root.confirmPerk(this.perk)
+                }
+            },
+            data() {
+                return {
+                    perk: '',
+                    perkText: '',
+                    transactions: this.$root.user.transactions
+                }
+            },
+            mounted() {
+                console.log(this.$root.user.transactions)
+            }
+        })
+
+        Vue.component('AuthForm', {
+            template: `<div class="auth-form-wrapper">
+                <p class="form-instructions">Please enter the information you signed up with along with the confirmation code you received via email.</p>
+                <div class="input-group">
+                    <label>Confirmation Code</label>
+                    <input v-mask="'######'" placeholder="######" type="text" :value="authCode" @input="event => authCode = event.target.value" />
+                </div>
+
+                <div class="input-group">
+                    <label>Enrollment Method</label>
+                    <div class="radio-buttons-group">
+                        <div class="radio-group">
+                            <input v-model="enrollmentMethod" type="radio" value="phone" name="pm" v-on:change="toggleFields()" />
+                            <label>Phone</label>
+                        </div>
+                        <div class="radio-group">
+                            <input v-model="enrollmentMethod" type="radio" value="email" name="em" v-on:change="toggleFields()" />
+                            <label>Email</label>
+                        </div>
+                    </div>
+                </div>
+
+                
+
+                <div class="input-group" v-if="enrollmentMethod === 'phone'">
+                    <label>Phone Number</label>
+                    <input v-mask="'+1 (###) ###-####'" placeholder="+1 (###) ###-####" type="tel" :value="phone" @input="event => phone = event.target.value" />
+                </div>
+
+                <div class="input-group" v-if="enrollmentMethod === 'email'">
+                    <label>Email</label>
+                    <input placeholder="your@email.com" :value="email" @input="event => email = event.target.value" />
+                </div>
+
+                <button v-on:click="tryAuth()" class="primary-button">LOGIN</button>
+            </div>`,
+            methods: {
+                tryAuth() {
+                    let authInfo = {
+                        authCode: this.authCode, enrollmentMethod: this.enrollmentMethod, email: this.email, phone: this.phone
+                    }
+                    this.$root.tryAuth(authInfo)
+                },
+                toggleFields() {
+                    console.log(this.enrollmentMethod)
+                }
+            },
+            data() {
+                return {
+                    authCode: '',
+                    enrollmentMethod: 'phone',
+                    email: '',
+                    phone: '',
+                }
+            }
+        })
+
+        const vueApp = new Vue({
+            el: '#root',
+            data: {
+                step: 'auth',
+                displayError: false,
+                user: null
+            },
+            methods: {
+                tryAuth(authInfo) {
+                    const paramsObj = authInfo
+                    const params = new URLSearchParams(paramsObj)
+                    console.log(authInfo)
+                    fetch(`/check-auth?${params.toString()}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 200) {
+                                this.user = data.user
+                                if (data.user.hasPerk === true) {
+                                    this.step = 'confirmation'
+                                } else {
+                                    this.step = 'perk'
+                                }
+                            } else {
+                                this.displayError = true
+                            }
+                        })
+                },
+                confirmPerk(perk) {
+                    this.user.perk = perk
+                    this.user.hasPerk = true
+                    const data = this.user
+                    fetch(`/set-perk`, {
+                        method: 'POST',
+                        mode: 'cors',
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify(data)
+                    })
+                }
+            }
+        })
+    </script>
+    
+</body>
+</html>
+
+

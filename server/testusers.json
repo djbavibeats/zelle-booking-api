@@ -1,0 +1,52 @@
+[{
+    "authCode": "",
+    "contactEmail": "justin@voltcreative.com",
+    "enrollmentMethod": "U.S. Mobile Number",
+    "email": "",
+    "phone": "+1 (520) 405-8693",
+    "transactions": 8,
+    "tier": "",
+    "perk": "",
+    "hasPerk": false
+},
+{
+    "authCode": "",
+    "contactEmail": "alec@voltcreative.com",
+    "enrollmentMethod": "U.S. Mobile Number",
+    "email": "",
+    "phone": "+1 (423) 341-8061",
+    "transactions": 6,
+    "tier": "",
+    "perk": "",
+    "hasPerk": false
+},
+{
+    "contactEmail": "kaby@voltcreative.com",
+    "enrollmentMethod": "Email",
+    "email": "kaby@voltcreative.com",
+    "phone": "",
+    "transactions": 4,
+    "tier": "",
+    "perk": "",
+    "hasPerk": false
+},
+{
+    "contactEmail": "hello@voltcreative.com",
+    "enrollmentMethod": "Email",
+    "email": "hello@voltcreative.com",
+    "phone": "",
+    "transactions": 1,
+    "tier": "",
+    "perk": "",
+    "hasPerk": false
+},
+{
+    "contactEmail": "jbavier123@gmail.com",
+    "enrollmentMethod": "Email",
+    "email": "jbavier123@gmail.com",
+    "phone": "",
+    "transactions": 0,
+    "tier": "",
+    "perk": "",
+    "hasPerk": false
+}]
