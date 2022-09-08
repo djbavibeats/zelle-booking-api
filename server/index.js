@@ -9,12 +9,15 @@ require('dotenv').config()
 
 const path = __dirname + '/../public'
 const app = express()
-app.use(express.static(path))
+// app.use(express.static(path))
+app.use(express.static('public'))
 app.use(bodyParser.json())
 app.use(express.json())
 app.use(cors())
 app.use(express.urlencoded({ extended: true }))
 
+app.set('view engine', 'ejs')
+app.set('views', './views')
 const MONGODB_STRING = process.env.MONGODB_STRING
 
 // app.get('/', (req, res) => {
@@ -27,7 +30,29 @@ var testusers = require('./testusers.json')
 var perks = require('./perks.json')
 const { ObjectId } = require('bson')
 
+app.get('/admin', (req, res) => {
+    res.render('admin')
+})
 
+app.get('/', (req, res) => {
+    res.render('index')
+})
+
+app.post('/admin-auth', (req, res) => {
+    console.log(req.body)
+    if (req.body.username === process.env.ADMIN_USER && req.body.password === process.env.ADMIN_PASSWORD) {
+        console.log('success')
+        res.send({
+            'status': 200,
+            'message': 'Authenticated.'
+        })
+    } else {
+        res.send({
+            'status': 400,
+            'message': 'Incorrect credentials.'
+        })
+    }
+})
 
 
 MongoClient.connect(MONGODB_STRING, function (err, client) {
