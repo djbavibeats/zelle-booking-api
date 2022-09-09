@@ -21,6 +21,9 @@
                 <img class="rocks-room-logo" src="./images/rocks-room-logo.png" />
             </div>
             <auth-form v-if="step === 'auth'"></auth-form>
+            <div class="error-message-container" v-if="displayError === true">
+
+            </div>
             <perk-form v-else-if="step === 'perk'" transactions="user.transactions"></perk-form>
             <confirmation-message v-else-if="step === 'confirmation'"></confirmation-message>
         </div>
@@ -34,22 +37,33 @@
         data: {
             step: 'auth',
             displayError: false,
-            user: null
+            user: null,
+            perkNumber: 0
         },
         methods: {
             tryAuth(authInfo) {
                 const paramsObj = authInfo
                 const params = new URLSearchParams(paramsObj)
-                console.log(authInfo)
+
                 fetch(`/check-auth?${params.toString()}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 200) {
                             this.user = data.user
-                            if (data.user.hasPerk === true) {
-                                this.step = 'confirmation'
-                            } else {
-                                this.step = 'perk'
+                            if (data.authCode === 1) {
+                                this.perkNumber = 1
+                                if (data.user.hasPerkOne === true) {
+                                    this.step = 'confirmation'
+                                } else {
+                                    this.step = 'perk'
+                                }
+                            } else if (data.authCode === 2) {
+                                this.perkNumber = 2
+                                if (data.user.hasPerkTwo === true) {
+                                    this.step = 'confirmation'
+                                } else {
+                                    this.step = 'perk'
+                                }
                             }
                         } else {
                             this.displayError = true
@@ -57,9 +71,15 @@
                     })
             },
             confirmPerk(perk) {
-                this.user.perk = perk
-                this.user.hasPerk = true
+                if (this.perkNumber = 1) {
+                    this.user.perkOne = perk
+                    this.user.hasPerkOne = true
+                } else if (this.perkNumber = 2) {
+                    this.user.perkTwo = perk
+                    this.user.hasPerkTwo = true
+                }
                 const data = this.user
+                console.log(data)
                 fetch(`/set-perk`, {
                     method: 'POST',
                     mode: 'cors',

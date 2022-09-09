@@ -26,7 +26,7 @@ const MONGODB_STRING = process.env.MONGODB_STRING
 //     })
 // })
 
-var testusers = require('./testusers.json')
+var users = require('./users.json')
 var perks = require('./perks.json')
 const { ObjectId } = require('bson')
 
@@ -75,57 +75,55 @@ MongoClient.connect(MONGODB_STRING, function (err, client) {
     
     app.get('/check-auth', (req, res) => {
         let authCode = req.query.authCode
-        let enrollmentMethod = req.query.enrollmentMethod
-        let email = req.query.email
-        let phone = req.query.phone
-        console.log(enrollmentMethod)
-        if (enrollmentMethod === 'phone') {
-            db.collection('users').findOne({ authCode: authCode, phone: phone })
-                .then(user => { 
-                    user ? res.send({ 'status': 200, 'message': 'User found.', 'user': user })
-                    : res.send({ 'status': 404, 'message': 'Incorrect credentials or user does not exist.'})
-                })
-                .catch(error => { res.send({ 'status': 400, 'error': error })})
-        } else if (enrollmentMethod === 'email') {
-            db.collection('users').findOne({ authCode: authCode, email: email })
-                .then(user => { 
-                    user ? res.send({ 'status': 200, 'message': 'User found.', 'user': user })
-                    : res.send({ 'status': 404, 'message': 'Incorrect credentials or user does not exist.'})
-                })
-                .catch(error => { res.send({ 'status': 400, 'error': error })})
-        }      
+
+        db.collection('users').findOne({ authCodeOne: authCode })
+            .then(user => { 
+                if (user) {
+                    res.send({ 'status': 200, 'message': 'User found.', 'user': user, 'authCode': 1 })
+                } else {
+                    db.collection('users').findOne({ authCodeTwo: authCode })
+                        .then(user => {
+                            if (user) {
+                                res.send({ 'status': 200, 'message': 'User found. Auth code two.', 'user': user, 'authCode': 2 })
+                            } else {
+                                res.send({ 'status': 404, 'message': 'Incorrect credentials or user does not exist.'})
+                            }
+                        })
+                }
+            })
+            .catch(error => { res.send({ 'status': 400, 'error': error })})
     })
 
     app.post('/set-perk', (req, res) => {
         let user = req.body
-       
+        console.log(user)
         // Check is PERK is sold out
-        db.collection('perks').findOne({ perkName: user.perk })
-            .then(perk => {
-                console.log(perk)
-                if (perk.signups >= perk.maxSignups) {
-                    res.send({ 'message': 'This perk is full' })
-                } else {
-                    db.collection('perks').findOneAndUpdate(
-                        { perkName: user.perk }, 
-                        { 
-                            $inc: { signups: perk.signups += 1 },
-                            $push: { users: user }
-                        })
+        // db.collection('perks').findOne({ perkName: user.perk })
+        //     .then(perk => {
+        //         console.log(perk)
+        //         if (perk.signups >= perk.maxSignups) {
+        //             res.send({ 'message': 'This perk is full' })
+        //         } else {
+        //             db.collection('perks').findOneAndUpdate(
+        //                 { perkName: user.perk }, 
+        //                 { 
+        //                     $inc: { signups: perk.signups += 1 },
+        //                     $push: { users: user }
+        //                 })
                     
-                    db.collection('users').findOneAndUpdate(
-                        { _id: ObjectId(user._id) },
-                        {
-                            $set: { 
-                                perk: user.perk,
-                                hasPerk: true 
-                            }
-                        }
-                    )
-                    res.send({ 'message': 'This perk is not full' })
-                }
-            })
-            .catch(error => { res.send({ 'status': 500, 'error': error }) })
+        //             db.collection('users').findOneAndUpdate(
+        //                 { _id: ObjectId(user._id) },
+        //                 {
+        //                     $set: { 
+        //                         perk: user.perk,
+        //                         hasPerk: true 
+        //                     }
+        //                 }
+        //             )
+        //             res.send({ 'message': 'This perk is not full' })
+        //         }
+        //     })
+        //     .catch(error => { res.send({ 'status': 500, 'error': error }) })
             // Send error if YES
 
             // Update USER with perk confirmation if NO
@@ -135,7 +133,6 @@ MongoClient.connect(MONGODB_STRING, function (err, client) {
 
     app.post('/create-user', (req, res) => {
         let userObject = req.body
-        userObject.authCode = uuidv4()
         db.collection('users').insertOne({
             ...userObject
         })
@@ -144,18 +141,26 @@ MongoClient.connect(MONGODB_STRING, function (err, client) {
     })
 
     app.get('/test-users', (req, res) => {
-        for (const user of testusers) {
+        var array = users
+        var interval = 1000
+        var promise = Promise.resolve()
+        var count = 0
+        array.forEach(function (user) {
+        promise = promise.then(function () {
+            count++
             axios.post('http://localhost:8080/create-user', { ...user })
-                .then(response => { res.send({ 'message': response }) })
-                .catch(error => { res.send({ 'message': error }) })
-        }
+                .then(response => { console.log(count, response.data) })
+                .catch(error => { console.log(error) })
+            return new Promise(function (resolve) { setTimeout(resolve, interval) })
+        })
+        })
     })
 
     app.get('/list-perks', (req, res) => {
         db.collection('perks').find().toArray(function (err, result) {
             if (err) throw err
 
-            console.log(result)
+            // console.log(result)
             res.send({
                 'perks': result
             })

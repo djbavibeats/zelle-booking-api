@@ -170,6 +170,13 @@ body {
     font-weight: 900;
 }
 
+.secondary-button.disabled, .secondary-button.disabled:hover {
+    cursor: auto !important;
+    background: darkgrey !important;
+    text-decoration: line-through !important;
+    color: darkred !important;
+}
+
 .logo-wrapper {
     display: flex; 
     align-items: center;

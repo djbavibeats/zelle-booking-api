@@ -1,75 +1,99 @@
 [
     {
         "perkName": "shakey graves",
+        "perkDisplay": "SHAKEY GRAVES | THURS 3:15 - 3:45 ET",
         "signups": 0,
-        "maxSignups": 1,
-        "users": []
+        "maxSignups": 150,
+        "users": [],
+        "type": "artist"
     },
     {
         "perkName": "courtney barnett",
+        "perkDisplay": "COURTNEY BARNETT | FRI 3:15 - 3:45 ET",
         "signups": 0,
-        "maxSignups": 1,
-        "users": []
+        "maxSignups": 150,
+        "users": [],
+        "type": "artist"
     },
     {
         "perkName": "st vincent",
+        "perkDisplay": "ST. VINCENT | SAT 3:15 - 3:45 ET",
         "signups": 0,
-        "maxSignups": 1,
-        "users": []
+        "maxSignups": 150,
+        "users": [],
+        "type": "artist"
     },
     {
         "perkName": "caamp",
-        "signups": 0,
-        "maxSignups": 1,
-        "users": []
+        "perkDisplay": "CAAMP | SUN 3:30 - 4:00 ET",
+        "signups": 150,
+        "maxSignups": 150,
+        "users": [],
+        "type": "artist"
     },
     {
         "perkName": "fred minnick - thursday",
+        "perkDisplay": "FRED MINNICK | THURS 12:30 - 2:00PM ET",
         "signups": 0,
-        "maxSignups": 1,
-        "users": []
+        "maxSignups": 124,
+        "users": [],
+        "type": "fred"
     },
     {
         "perkName": "fred minnick - friday",
+        "perkDisplay": "FRED MINNICK | FRI 12:30 - 2:00PM ET",
         "signups": 0,
-        "maxSignups": 1,
-        "users": []
+        "maxSignups": 124,
+        "users": [],
+        "type": "fred"
     },
     {
         "perkName": "fred minnick - saturday",
+        "perkDisplay": "FRED MINNICK | SAT 12:30 - 2:00PM ET",
         "signups": 0,
-        "maxSignups": 1,
-        "users": []
+        "maxSignups": 124,
+        "users": [],
+        "type": "fred"
     },
     {
         "perkName": "fred minnick - sunday",
+        "perkDisplay": "FRED MINNICK | SUN 12:30 - 2:00PM ET",
         "signups": 0,
-        "maxSignups": 1,
-        "users": []
+        "maxSignups": 124,
+        "users": [],
+        "type": "fred"
     },
     
     {
         "perkName": "anthony lamas - thursday",
+        "perkDisplay": "ANTHONY LAMAS | THURS 5:30 - 7:30PM ET",
         "signups": 0,
-        "maxSignups": 9999,
-        "users": []
+        "maxSignups": 124,
+        "users": [],
+        "type": "anthony"
     },
     {
         "perkName": "anthony lamas - friday",
+        "perkDisplay": "ANTHONY LAMAS | FRI 5:30 - 7:30PM ET",
         "signups": 0,
-        "maxSignups": 9999,
-        "users": []
+        "maxSignups": 124,
+        "users": [],
+        "type": "anthony"
     },
     {
         "perkName": "anthony lamas - saturday",
+        "perkDisplay": "ANTHONY LAMAS | SAT 5:30 - 7:30PM ET",
         "signups": 0,
-        "maxSignups": 9999,
-        "users": []
+        "maxSignups": 124,
+        "users": [],
+        "type": "anthony"
     },
     {
         "perkName": "anthony lamas - sunday",
+        "perkDisplay": "ANTHONY LAMAS | SUN 5:30 - 7:30PM ET",
         "signups": 0,
-        "maxSignups": 9999,
-        "users": []
+        "maxSignups": 124,
+        "users": [],
+        "type": "anthony"
     }
 ]

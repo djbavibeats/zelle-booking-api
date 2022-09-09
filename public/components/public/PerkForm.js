@@ -13,11 +13,16 @@ Vue.component('PerkForm', {
                     </div>
                     <h3>Access to 1 Exclusive Perfromance with Shakey Graves, Courtney Barnett, St. Vincent, OR Caamp</h3>
                     <div class="perk-buttons-wrapper">
-                        <button class="secondary-button" v-on:click="updatePerk('shakey graves')">SHAKEY GRAVES | THURS 3:15 - 3:45 ET</button>
-                        <button class="secondary-button" v-on:click="updatePerk('courtney barnett')">COURTNEY BARNETT | FRI 3:15 - 3:45 ET</button>
-                        <button class="secondary-button" v-on:click="updatePerk('st vincent')">ST. VINCENT | SAT 3:15 - 3:45 ET</button>
-                        <button class="secondary-button" v-on:click="updatePerk('caamp')">CAAMP | SUN 3:30 - 4:00 ET</button>
+                        <div v-for="perk in this.artistPerks">
+                            <div v-if="perk.signups < perk.maxSignups">
+                                <button class="secondary-button" v-on:click="updatePerk(perk.perkName)">{{ perk.perkDisplay }}</button>
+                            </div>
+                            <div v-else-if="perk.signups >= perk.maxSignups">
+                                <button disabled class="secondary-button disabled">{{ perk.perkDisplay }}</button>
+                            </div>
+                        </div>
                     </div>
+
                 </div>
                 <div class="perk-group-wrapper two" v-if="transactions >= 6">
                     <div class="perk-image-wrapper">
@@ -25,10 +30,14 @@ Vue.component('PerkForm', {
                     </div>
                     <h3>Fred Minnick's Blind Bourbon Experience</h3>
                     <div class="perk-buttons-wrapper">
-                        <button class="secondary-button" v-on:click="updatePerk('fred minnick - thursday')">THURS 12:30 - 2:00PM ET</button>
-                        <button class="secondary-button" v-on:click="updatePerk('fred minnick - friday')">FRI 12:30 - 2:00PM ET</button>
-                        <button class="secondary-button" v-on:click="updatePerk('fred minnick - saturday')">SAT 12:30 - 2:00PM ET</button>
-                        <button class="secondary-button" v-on:click="updatePerk('fred minnick - sunday')">SUN 12:30 - 2:00PM ET</button>
+                        <div v-for="perk in this.fredPerks">
+                            <div v-if="perk.signups < perk.maxSignups">
+                                <button class="secondary-button" v-on:click="updatePerk(perk.perkName)">{{ perk.perkDisplay }}</button>
+                            </div>
+                            <div v-else-if="perk.signups >= perk.maxSignups">
+                                <button disabled class="secondary-button disabled">{{ perk.perkDisplay }}</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 <div class="perk-group-wrapper three">
@@ -37,10 +46,14 @@ Vue.component('PerkForm', {
                     </div>
                     <h3>4-Course Dining Experience by Chef Anthony Lamas</h3>
                     <div class="perk-buttons-wrapper">
-                        <button class="secondary-button" v-on:click="updatePerk('anthony lamas - thursday')">THURS 5:30 - 7:30PM ET</button>
-                        <button class="secondary-button" v-on:click="updatePerk('anthony lamas - friday')">FRI 5:30 - 7:30PM ET</button>
-                        <button class="secondary-button" v-on:click="updatePerk('anthony lamas - saturday')">SAT 5:30 - 7:30PM ET</button>
-                        <button class="secondary-button" v-on:click="updatePerk('anthony lamas - sunday')">SUN 5:30 - 7:30PM ET</button>
+                        <div v-for="perk in this.anthonyPerks">
+                            <div v-if="perk.signups < perk.maxSignups">
+                                <button class="secondary-button" v-on:click="updatePerk(perk.perkName)">{{ perk.perkDisplay }}</button>
+                            </div>
+                            <div v-else-if="perk.signups >= perk.maxSignups">
+                                <button disabled class="secondary-button disabled">{{ perk.perkDisplay }}</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -56,6 +69,7 @@ Vue.component('PerkForm', {
     methods: {
         updatePerk(perk) {
             this.perk = perk
+            console.log(perk)
             switch(perk) {
                 case ('shakey graves'):
                     this.perkText = 'SHAKEY GRAVES | THURS 3:15 - 3:45 ET'
@@ -107,10 +121,22 @@ Vue.component('PerkForm', {
         return {
             perk: '',
             perkText: '',
-            transactions: this.$root.user.transactions
+            transactions: this.$root.user.transactions,
+            artistPerks: [],
+            fredPerks: [],
+            anthonyPerks: []
         }
     },
     mounted() {
         console.log(this.$root.user.transactions)
+        fetch('/list-perks')
+        .then(response => response.json())
+        .then(data => {
+            for (const perk of data.perks) {
+                if (perk.type === 'artist') { this.artistPerks.push(perk) }
+                if (perk.type === 'fred') { this.fredPerks.push(perk) }
+                if (perk.type === 'anthony') { this.anthonyPerks.push(perk) }
+            }
+        })
     }
 })
