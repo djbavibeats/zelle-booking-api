@@ -1,8 +1,13 @@
 Vue.component('ConfirmationMessage', {
     template: `<div class="confirmation-message-wrapper">
-        <h1>You're all set!</h1>
-        <p>You've been confirmed for the following experience:</p>
-        <h3>{{ perkString }}</h3>
+        <div class="section-header">
+            <div class="header-line"></div>
+                <p class="form-instructions">SUCCESS</p>
+            <div class="header-line"></div>
+        </div>
+        You are scheduled for {{ perkString }}’s private performance.
+
+        Please have your email confirmation on hand when checking into the perfOrmance.
     </div>`,
     data() {
         return {

@@ -151,6 +151,17 @@ MongoClient.connect(MONGODB_STRING, function (err, client) {
         }
     })
 
+    app.get('/list-perks', (req, res) => {
+        db.collection('perks').find().toArray(function (err, result) {
+            if (err) throw err
+
+            console.log(result)
+            res.send({
+                'perks': result
+            })
+        })
+    })
+
     app.post('/create-perk', (req, res) => {
         let perkObject = req.body
         console.log(perkObject)

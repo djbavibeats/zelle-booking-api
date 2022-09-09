@@ -197,6 +197,10 @@ body {
     background: white;
 }
 
+.confirmation-message-wrapper { 
+    color: white;
+    text-align: center;
+}
 @media only screen and (max-width: 768px) {
     .perk-groups {
         flex-direction: column;
@@ -204,7 +208,103 @@ body {
 }
 
 /* Admin Email */
+.admin-dashboard-wrapper {
+    width: 960px;
+    margin: 0 auto;
+}
+
+.admin-dashboard-header {
+    color: white;
+    text-align: center;
+}
+
+.admin-dashboard-users-table {
+    background: #6d1ed4;
+    border-radius: 7px;
+}
+
+.admin-user-header-column {
+    padding: 15px 15px;
+    border-right: 1px solid #6d1ed4;
+}
+
+.admin-user-info-column {
+    padding: 15px 15px;
+    border-right: 1px solid white;
+}
+
+.admin-user-info-column.one, .admin-user-header-column.one { flex: 1; }
+.admin-user-info-column.two, .admin-user-header-column.two { flex: 1; }
+.admin-user-info-column.three, .admin-user-header-column.three { flex: 1; }
+.admin-user-info-column.four, .admin-user-header-column.four { flex: .5; }
+.admin-user-info-column.five, .admin-user-header-column.five { flex: .25; border-right: none; }
+
+.admin-user-perk-column {
+    padding: 15px 15px;
+    border-right: 1px solid white;
+}
+.admin-user-perk-column.one { flex: 1; }
+.admin-user-perk-column.two { flex: 1; }
+.admin-user-perk-column.three { flex: 1; border-right: none; }
+
+.admin-user-header {
+    background: #f4f471;
+    color: #6d1ed4;
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid #6d1ed4;
+}
+
 .admin-user-wrapper {
-    border: 1px solid white;
-    margin-bottom: 15px;
+    color: white;
+    display: flex;
+    flex-direction: row;
+    border-bottom: 1px solid white;
+}
+
+.admin-user-wrapper:last-child {
+    border-bottom: none;
+}
+
+.admin-user-sub-header {
+    background: #f4f471;
+    color: #6d1ed4;
+    padding: 15px 15px;
+    border-bottom: 1px solid #6d1ed4;
+    border-right: 1px solid #6d1ed4;
+}
+
+.admin-perks-wrapper, .admin-dashboard-users-table {
+    margin-top: 15px;
+}
+
+.table-nav {
+    display: flex;
+    justify-content: center;
+    margin-top: 15px;
+}
+
+.table-nav-item {
+    color: white;
+    font-size: 20px;
+    font-weight: 900;
+    margin: 0px 15px;
+}
+
+.table-nav-item:hover {
+    cursor: pointer;
+}
+
+.table-nav-item.active {
+    text-decoration: underline;
+}
+
+@media only screen and (max-width: 768px) {
+    .admin-dashboard-wrapper {
+        width: 350px;
+    }
+
+    .admin-user-wrapper {
+        flex-direction: column;
+    }
 }
