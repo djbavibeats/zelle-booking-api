@@ -11,6 +11,17 @@
         "authCodeTwo": "12345602"
     },
     {
+        "contactEmail": "justin@voltcreative.com",
+        "transactions": 7,
+        "tier": 6,
+        "perkOne": "",
+        "hasPerkOne": false,
+        "authCodeOne": "12345603",
+        "perkTwo": "",
+        "hasPerkTwo": false,
+        "authCodeTwo": ""
+    },
+    {
         "contactEmail": "wendyidellnichols@gmail.com",
         "transactions": 204,
         "tier": 8,

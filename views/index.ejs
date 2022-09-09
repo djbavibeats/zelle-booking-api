@@ -21,11 +21,11 @@
                 <img class="rocks-room-logo" src="./images/rocks-room-logo.png" />
             </div>
             <auth-form v-if="step === 'auth'"></auth-form>
-            <div class="error-message-container" v-if="displayError === true">
-
-            </div>
             <perk-form v-else-if="step === 'perk'" transactions="user.transactions"></perk-form>
             <confirmation-message v-else-if="step === 'confirmation'"></confirmation-message>
+            <div class="error-message-container" v-if="displayError === true">
+                {{ errorMessage }}
+            </div>
         </div>
     </div>
     <script src="./components/public/AuthForm.js"></script>
@@ -37,57 +37,82 @@
         data: {
             step: 'auth',
             displayError: false,
+            errorMessage: '',
             user: null,
             perkNumber: 0
         },
         methods: {
             tryAuth(authInfo) {
-                const paramsObj = authInfo
-                const params = new URLSearchParams(paramsObj)
-
-                fetch(`/check-auth?${params.toString()}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 200) {
-                            this.user = data.user
-                            if (data.authCode === 1) {
-                                this.perkNumber = 1
-                                if (data.user.hasPerkOne === true) {
-                                    this.step = 'confirmation'
-                                } else {
-                                    this.step = 'perk'
+                if (!authInfo.authCode) {
+                    this.displayError = true
+                    this.errorMessage = 'Please enter a valid confirmation code.'
+                } else {
+                    this.displayError = false
+                    this.errorMessage = ''
+                    const paramsObj = authInfo
+                    const params = new URLSearchParams(paramsObj)
+    
+                    fetch(`/check-auth?${params.toString()}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log(data)
+                            if (data.status === 200) {
+                                this.user = data.user
+                                if (data.authCode === 1) {
+                                    this.perkNumber = 1
+                                    if (data.user.hasPerkOne === true) {
+                                        this.step = 'confirmation'
+                                    } else {
+                                        this.step = 'perk'
+                                    }
+                                } else if (data.authCode === 2) {
+                                    this.perkNumber = 2
+                                    if (data.user.hasPerkTwo === true) {
+                                        this.step = 'confirmation'
+                                    } else {
+                                        console.log(this.perkNumber)
+                                        this.step = 'perk'
+                                    }
                                 }
-                            } else if (data.authCode === 2) {
-                                this.perkNumber = 2
-                                if (data.user.hasPerkTwo === true) {
-                                    this.step = 'confirmation'
-                                } else {
-                                    this.step = 'perk'
-                                }
+                            } else {
+     
+                                this.displayError = true
+                                this.errorMessage = 'Please enter a valid confirmation code.'
                             }
-                        } else {
-                            this.displayError = true
-                        }
-                    })
+                        })
+                }
             },
             confirmPerk(perk) {
-                if (this.perkNumber = 1) {
+                if (this.perkNumber === 1) {
                     this.user.perkOne = perk
                     this.user.hasPerkOne = true
-                } else if (this.perkNumber = 2) {
+                } else if (this.perkNumber === 2) {
                     this.user.perkTwo = perk
                     this.user.hasPerkTwo = true
                 }
-                const data = this.user
-                console.log(data)
+                console.log(this.perkNumber)
+                const data = { 
+                    user: { ...this.user },
+                    perk: perk
+                }
+                console.log("hello", data)
                 fetch(`/set-perk`, {
                     method: 'POST',
                     mode: 'cors',
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(data)
                 })
-                    .then(() => {
-                        this.step = 'confirmation'
+                    .then(response => response.json())
+                    .then(data => {
+                        console.log(data)
+                        if (data.status === 200) {
+                            this.displayError = false
+                            this.errorMessage = ''
+                            this.step = 'confirmation'
+                        } else if (data.status === 400) {
+                            this.displayError = true
+                            this.errorMessage = 'Sorry, this perk has filled up. Please select another'
+                        }
                     })
             }
         }

@@ -95,11 +95,45 @@ MongoClient.connect(MONGODB_STRING, function (err, client) {
     })
 
     app.post('/set-perk', (req, res) => {
-        let user = req.body
-        console.log(user)
+        let data = req.body
+        console.log('setting perk')
+        console.log(data)
         // Check is PERK is sold out
-        // db.collection('perks').findOne({ perkName: user.perk })
-        //     .then(perk => {
+        db.collection('perks').findOne({ perkName: data.perk })
+            .then(perk => {
+                if (perk.signups >= perk.maxSignups) {
+                    console.log('this perk is full')
+                    res.send({ 
+                        'status': 400,
+                        'message': 'this perk is full'
+                    })
+                } else {
+                    console.log('this perk is not full')
+                    db.collection('perks').findOneAndUpdate(
+                        { perkName: perk.perkName },
+                        {
+                            $inc: { signups: 1 },
+                            $push: { users: data.user }
+                        }
+                    )
+
+                    db.collection('users').findOneAndUpdate(
+                        { _id: ObjectId(data.user._id) },
+                        {                         
+                            $set: {
+                                perkOne: data.user.perkOne,
+                                hasPerkOne: data.user.hasPerkOne,
+                                perkTwo: data.user.perkTwo,
+                                hasPerkTwo: data.user.hasPerkTwo
+                            }
+                        }
+                    )
+                    res.send({
+                        'status': 200,
+                        'message': 'this perk is not full'
+                    })
+                }
+            })
         //         console.log(perk)
         //         if (perk.signups >= perk.maxSignups) {
         //             res.send({ 'message': 'This perk is full' })
@@ -159,8 +193,6 @@ MongoClient.connect(MONGODB_STRING, function (err, client) {
     app.get('/list-perks', (req, res) => {
         db.collection('perks').find().toArray(function (err, result) {
             if (err) throw err
-
-            // console.log(result)
             res.send({
                 'perks': result
             })

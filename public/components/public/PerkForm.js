@@ -18,7 +18,7 @@ Vue.component('PerkForm', {
                                 <button class="secondary-button" v-on:click="updatePerk(perk.perkName)">{{ perk.perkDisplay }}</button>
                             </div>
                             <div v-else-if="perk.signups >= perk.maxSignups">
-                                <button disabled class="secondary-button disabled">{{ perk.perkDisplay }}</button>
+                                <button disabled class="secondary-button disabled">{{ perk.perkDisplay }}<br />SOLD OUT</button>
                             </div>
                         </div>
                     </div>
@@ -35,7 +35,7 @@ Vue.component('PerkForm', {
                                 <button class="secondary-button" v-on:click="updatePerk(perk.perkName)">{{ perk.perkDisplay }}</button>
                             </div>
                             <div v-else-if="perk.signups >= perk.maxSignups">
-                                <button disabled class="secondary-button disabled">{{ perk.perkDisplay }}</button>
+                                <button disabled class="secondary-button disabled">{{ perk.perkDisplay }}<br />SOLD OUT</button>
                             </div>
                         </div>
                     </div>
@@ -51,7 +51,7 @@ Vue.component('PerkForm', {
                                 <button class="secondary-button" v-on:click="updatePerk(perk.perkName)">{{ perk.perkDisplay }}</button>
                             </div>
                             <div v-else-if="perk.signups >= perk.maxSignups">
-                                <button disabled class="secondary-button disabled">{{ perk.perkDisplay }}</button>
+                                <button disabled class="secondary-button disabled">{{ perk.perkDisplay }}<br />SOLD OUT</button>
                             </div>
                         </div>
                     </div>
@@ -60,10 +60,13 @@ Vue.component('PerkForm', {
             <div class="perk-confirmation-text-wrapper">
                 <p class="perk-confirmation-text">Your chosen perk is: {{ perkText }}</p>
             </div>
-            <button class="primary-button" v-on:click="confirmPerk()">CONFRIM</button>
+            <button class="primary-button" v-on:click="confirmPerk()">CONFIRM</button>
         </div>
         <div class="perk-group-wrapper" v-else-if="transactions < 4">
-            <h3>You've unlocked expedited entry to Bourbon and Beyond!</h3>
+            <div class="expedited-entry-wrapper">
+                <img style="margin-top: 15px;" src="./images/bourbon-and-beyond-logo.png" />
+                <h3 style="margin-top: 15px; min-height: 0px !important;">You've unlocked expedited entry to Bourbon and Beyond!</h3>
+            </div>
         </div>
     </div>`,
     methods: {
@@ -113,7 +116,6 @@ Vue.component('PerkForm', {
             }
         },
         confirmPerk() {
-            console.log(this.perk)
             this.$root.confirmPerk(this.perk)
         }
     },
@@ -128,15 +130,14 @@ Vue.component('PerkForm', {
         }
     },
     mounted() {
-        console.log(this.$root.user.transactions)
         fetch('/list-perks')
-        .then(response => response.json())
-        .then(data => {
-            for (const perk of data.perks) {
-                if (perk.type === 'artist') { this.artistPerks.push(perk) }
-                if (perk.type === 'fred') { this.fredPerks.push(perk) }
-                if (perk.type === 'anthony') { this.anthonyPerks.push(perk) }
-            }
-        })
+            .then(response => response.json())
+            .then(data => {
+                for (const perk of data.perks) {
+                    if (perk.type === 'artist') { this.artistPerks.push(perk) }
+                    if (perk.type === 'fred') { this.fredPerks.push(perk) }
+                    if (perk.type === 'anthony') { this.anthonyPerks.push(perk) }
+                }
+            })
     }
 })
