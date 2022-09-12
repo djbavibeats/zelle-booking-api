@@ -29,9 +29,8 @@ const MONGODB_STRING = process.env.MONGODB_STRING
 //     })
 // })
 
-var testusers = require('./testusers.json')
-var users = require('./users.json')
-var perks = require('./perks.json')
+var users = require('../notes/users.json')
+var perks = require('../notes/perks.json')
 const { ObjectId } = require('bson')
 
 app.get('/admin', (req, res) => {
@@ -67,7 +66,7 @@ MongoClient.connect(MONGODB_STRING, function (err, client) {
     console.log('connected to MongoDB')
 
     app.get('/list-users', (req, res) => {
-        db.collection('test-users').find().toArray(function (err, result) {
+        db.collection('users').find().toArray(function (err, result) {
             if (err) throw err
 
             console.log(result)
@@ -81,13 +80,13 @@ MongoClient.connect(MONGODB_STRING, function (err, client) {
         let authCode = req.query.authCode
         let email = req.query.email
         console.log(authCode, email)
-        db.collection('test-users').findOne({ contactEmail: email, authCodeOne: authCode })
+        db.collection('users').findOne({ contactEmail: email, authCodeOne: authCode })
             .then(user => { 
                 console.log('hey', user)
                 if (user) {
                     res.send({ 'status': 200, 'message': 'User found.', 'user': user, 'authCode': 1 })
                 } else {
-                    db.collection('test-users').findOne({ authCodeTwo: authCode })
+                    db.collection('users').findOne({ authCodeTwo: authCode })
                         .then(user => {
                             if (user) {
                                 res.send({ 'status': 200, 'message': 'User found. Auth code two.', 'user': user, 'authCode': 2 })
@@ -122,7 +121,7 @@ MongoClient.connect(MONGODB_STRING, function (err, client) {
                         }
                     )
 
-                    db.collection('test-users').findOneAndUpdate(
+                    db.collection('users').findOneAndUpdate(
                         { _id: ObjectId(data.user._id) },
                         {                         
                             $set: {
@@ -143,15 +142,15 @@ MongoClient.connect(MONGODB_STRING, function (err, client) {
 
     app.post('/create-user', (req, res) => {
         let userObject = req.body
-        db.collection('test-users').insertOne({
+        db.collection('users').insertOne({
             ...userObject
         })
             .then(response => { res.send({ 'message': response }) })
             .catch(error => { res.send({ 'error': error }) })
     })
 
-    app.get('/test-users', (req, res) => {
-        var array = testusers
+    app.get('/users', (req, res) => {
+        var array = users
         var interval = 1000
         var promise = Promise.resolve()
         var count = 0
