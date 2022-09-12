@@ -15,7 +15,7 @@ Vue.component('PerkForm', {
                     <div class="perk-buttons-wrapper">
                         <div v-for="perk in this.artistPerks">
                             <div v-if="perk.signups < perk.maxSignups">
-                                <button class="secondary-button" v-on:click="updatePerk(perk.perkName)">{{ perk.perkDisplay }}</button>
+                                <button class="secondary-button" v-on:click="updatePerk(perk)">{{ perk.perkDisplay }}</button>
                             </div>
                             <div v-else-if="perk.signups >= perk.maxSignups">
                                 <button disabled class="secondary-button disabled">{{ perk.perkDisplay }}<br />SOLD OUT</button>
@@ -26,13 +26,13 @@ Vue.component('PerkForm', {
                 </div>
                 <div class="perk-group-wrapper two" v-if="transactions >= 6">
                     <div class="perk-image-wrapper">
-                        <img class="perk-image" src="./images/fred-minnick-perk-image.png" />
+                        <img class="perk-image" src="./images/anthony-llamas-perk-image.png" />
                     </div>
-                    <h3>Fred Minnick's Blind Bourbon Experience</h3>
+                    <h3>4-Course Dining Experience by Chef Anthony Lamas</h3>
                     <div class="perk-buttons-wrapper">
-                        <div v-for="perk in this.fredPerks">
+                        <div v-for="perk in this.anthonyPerks">
                             <div v-if="perk.signups < perk.maxSignups">
-                                <button class="secondary-button" v-on:click="updatePerk(perk.perkName)">{{ perk.perkDisplay }}</button>
+                                <button class="secondary-button" v-on:click="updatePerk(perk)">{{ perk.perkDisplay }}</button>
                             </div>
                             <div v-else-if="perk.signups >= perk.maxSignups">
                                 <button disabled class="secondary-button disabled">{{ perk.perkDisplay }}<br />SOLD OUT</button>
@@ -42,13 +42,13 @@ Vue.component('PerkForm', {
                 </div>
                 <div class="perk-group-wrapper three">
                     <div class="perk-image-wrapper">
-                        <img class="perk-image" src="./images/anthony-llamas-perk-image.png" />
+                        <img class="perk-image" src="./images/fred-minnick-perk-image.png" />
                     </div>
-                    <h3>4-Course Dining Experience by Chef Anthony Lamas</h3>
+                    <h3>Fred Minnick's Blind Bourbon Experience</h3>
                     <div class="perk-buttons-wrapper">
-                        <div v-for="perk in this.anthonyPerks">
+                        <div v-for="perk in this.fredPerks">
                             <div v-if="perk.signups < perk.maxSignups">
-                                <button class="secondary-button" v-on:click="updatePerk(perk.perkName)">{{ perk.perkDisplay }}</button>
+                                <button class="secondary-button" v-on:click="updatePerk(perk)">{{ perk.perkDisplay }}</button>
                             </div>
                             <div v-else-if="perk.signups >= perk.maxSignups">
                                 <button disabled class="secondary-button disabled">{{ perk.perkDisplay }}<br />SOLD OUT</button>
@@ -73,7 +73,7 @@ Vue.component('PerkForm', {
         updatePerk(perk) {
             this.perk = perk
             console.log(perk)
-            switch(perk) {
+            switch(perk.perkName) {
                 case ('shakey graves'):
                     this.perkText = 'SHAKEY GRAVES | THURS 3:15 - 3:45 ET'
                     break

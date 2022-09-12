@@ -41,6 +41,12 @@
             user: null,
             perkNumber: 0
         },
+        mounted() {
+            const queryString = window.location.search
+            const urlParams = new URLSearchParams(queryString)
+            this.paramsEmail = urlParams.get('email')
+            console.log(this.paramsEmail)
+        },
         methods: {
             tryAuth(authInfo) {
                 if (!authInfo.authCode) {
@@ -49,8 +55,10 @@
                 } else {
                     this.displayError = false
                     this.errorMessage = ''
+                    authInfo.email = this.paramsEmail
                     const paramsObj = authInfo
                     const params = new URLSearchParams(paramsObj)
+                    
     
                     fetch(`/check-auth?${params.toString()}`)
                         .then(response => response.json())
@@ -83,6 +91,7 @@
                 }
             },
             confirmPerk(perk) {
+                console.log(perk)
                 if (this.perkNumber === 1) {
                     this.user.perkOne = perk
                     this.user.hasPerkOne = true
@@ -90,29 +99,51 @@
                     this.user.perkTwo = perk
                     this.user.hasPerkTwo = true
                 }
-                console.log(this.perkNumber)
-                const data = { 
+
+                const perkData = { 
                     user: { ...this.user },
-                    perk: perk
+                    perk: { ...perk }
                 }
-                console.log("hello", data)
+                console.log(perkData)
+
                 fetch(`/set-perk`, {
                     method: 'POST',
                     mode: 'cors',
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(data)
+                    body: JSON.stringify(perkData)
                 })
                     .then(response => response.json())
-                    .then(data => {
-                        console.log(data)
-                        if (data.status === 200) {
-                            this.displayError = false
-                            this.errorMessage = ''
-                            this.step = 'confirmation'
-                        } else if (data.status === 400) {
+                    .then(perkDataResponse => {
+                        console.log('set perk response', perkDataResponse)
+                        if (perkDataResponse.status === 200) {
+
+                            const tagData = {
+                                email: this.user.contactEmail,
+                                tag: perk.perkTag
+                            }
+
+                            fetch(`/update-mailchimp-tag`, {
+                                method:'POST',
+                                mode: 'cors',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(tagData)
+                            })
+                                .then(response => response.json())
+                                .then(tagDataResponse => {
+                                    console.log('add mailchimp tag', tagDataResponse)
+                                    if (tagDataResponse.status === 200) {
+                                        this.displayError = false
+                                        this.errorMessage = ''
+                                        this.step = 'confirmation'
+                                    } else if (tagDataResponse.status === 400) {
+                                        this.displayError = true
+                                        this.errorMessage = 'Something has gone wrong. Please refresh and try again.'
+                                    }
+                                })
+                        } else if (perkDataResponse.status === 400) {
                             this.displayError = true
                             this.errorMessage = 'Sorry, this perk has filled up. Please select another'
-                        }
+                        }  
                     })
             }
         }

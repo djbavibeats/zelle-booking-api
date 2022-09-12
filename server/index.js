@@ -5,6 +5,9 @@ const { URLSearchParams } = require('url')
 const { v4: uuidv4 } = require('uuid')
 const MongoClient = require('mongodb').MongoClient
 const axios = require('axios')
+// const mailchimp = require('@mailchimp/mailchimp_transactional')('3SaGF1PPdMZbnm70OPNwlQ');
+const mailchimp = require('@mailchimp/mailchimp_marketing')
+const md5 = require('md5')
 require('dotenv').config()
 
 const path = __dirname + '/../public'
@@ -26,6 +29,7 @@ const MONGODB_STRING = process.env.MONGODB_STRING
 //     })
 // })
 
+var testusers = require('./testusers.json')
 var users = require('./users.json')
 var perks = require('./perks.json')
 const { ObjectId } = require('bson')
@@ -63,7 +67,7 @@ MongoClient.connect(MONGODB_STRING, function (err, client) {
     console.log('connected to MongoDB')
 
     app.get('/list-users', (req, res) => {
-        db.collection('users').find().toArray(function (err, result) {
+        db.collection('test-users').find().toArray(function (err, result) {
             if (err) throw err
 
             console.log(result)
@@ -75,13 +79,15 @@ MongoClient.connect(MONGODB_STRING, function (err, client) {
     
     app.get('/check-auth', (req, res) => {
         let authCode = req.query.authCode
-
-        db.collection('users').findOne({ authCodeOne: authCode })
+        let email = req.query.email
+        console.log(authCode, email)
+        db.collection('test-users').findOne({ contactEmail: email, authCodeOne: authCode })
             .then(user => { 
+                console.log('hey', user)
                 if (user) {
                     res.send({ 'status': 200, 'message': 'User found.', 'user': user, 'authCode': 1 })
                 } else {
-                    db.collection('users').findOne({ authCodeTwo: authCode })
+                    db.collection('test-users').findOne({ authCodeTwo: authCode })
                         .then(user => {
                             if (user) {
                                 res.send({ 'status': 200, 'message': 'User found. Auth code two.', 'user': user, 'authCode': 2 })
@@ -96,10 +102,9 @@ MongoClient.connect(MONGODB_STRING, function (err, client) {
 
     app.post('/set-perk', (req, res) => {
         let data = req.body
-        console.log('setting perk')
-        console.log(data)
+
         // Check is PERK is sold out
-        db.collection('perks').findOne({ perkName: data.perk })
+        db.collection('perks').findOne({ perkName: data.perk.perkName })
             .then(perk => {
                 if (perk.signups >= perk.maxSignups) {
                     console.log('this perk is full')
@@ -117,7 +122,7 @@ MongoClient.connect(MONGODB_STRING, function (err, client) {
                         }
                     )
 
-                    db.collection('users').findOneAndUpdate(
+                    db.collection('test-users').findOneAndUpdate(
                         { _id: ObjectId(data.user._id) },
                         {                         
                             $set: {
@@ -134,40 +139,11 @@ MongoClient.connect(MONGODB_STRING, function (err, client) {
                     })
                 }
             })
-        //         console.log(perk)
-        //         if (perk.signups >= perk.maxSignups) {
-        //             res.send({ 'message': 'This perk is full' })
-        //         } else {
-        //             db.collection('perks').findOneAndUpdate(
-        //                 { perkName: user.perk }, 
-        //                 { 
-        //                     $inc: { signups: perk.signups += 1 },
-        //                     $push: { users: user }
-        //                 })
-                    
-        //             db.collection('users').findOneAndUpdate(
-        //                 { _id: ObjectId(user._id) },
-        //                 {
-        //                     $set: { 
-        //                         perk: user.perk,
-        //                         hasPerk: true 
-        //                     }
-        //                 }
-        //             )
-        //             res.send({ 'message': 'This perk is not full' })
-        //         }
-        //     })
-        //     .catch(error => { res.send({ 'status': 500, 'error': error }) })
-            // Send error if YES
-
-            // Update USER with perk confirmation if NO
-
-            // Update PERK count
     })
 
     app.post('/create-user', (req, res) => {
         let userObject = req.body
-        db.collection('users').insertOne({
+        db.collection('test-users').insertOne({
             ...userObject
         })
             .then(response => { res.send({ 'message': response }) })
@@ -175,7 +151,7 @@ MongoClient.connect(MONGODB_STRING, function (err, client) {
     })
 
     app.get('/test-users', (req, res) => {
-        var array = users
+        var array = testusers
         var interval = 1000
         var promise = Promise.resolve()
         var count = 0
@@ -218,8 +194,75 @@ MongoClient.connect(MONGODB_STRING, function (err, client) {
     })
 })
 
+// app.get('/test-mailchimp-transactional', (req, res) => {
+//     async function callPing() {
+//     const response = await mailchimp.users.ping();
+//     console.log(response);
+//     }
 
+//     callPing();
+// })
 
+// app.get('/send-test-email', (req, res) => {
+//     const message = {
+//         from_email: 'bourbon@justinbavier.com',
+//         subject: 'hello world',
+//         text: 'welcome to mailchimp transactional',
+//         to: [
+//             {
+//                 email: 'justin@justinbavier.com',
+//                 type: 'to'
+//             }
+//         ]
+//     }
+
+//     async function run() {
+//         const response = await mailchimp.messages.send({
+//           message
+//         });
+//         console.log(response);
+//       }
+//       run();
+// })
+
+/**
+ * MAILCHIMP API FUNCTIONS
+ */
+mailchimp.setConfig({
+    apiKey: process.env.MAILCHIMP_MARKETING_API_KEY,
+    server: process.env.MAILCHIMP_MARKETING_SERVER_PREFIX
+})
+
+app.post('/update-mailchimp-tag', (req, res) => {
+    console.log(req.body)
+    const email = req.body.email
+    const tag = req.body.tag
+    const listId = process.env.MAILCHIMP_LIST_ID
+    const subscriberHash = md5(email.toLowerCase())
+
+    const run = async () => {
+        const response = await mailchimp.lists.updateListMemberTags(
+            listId,
+            subscriberHash,
+            { tags: [{ name: tag, status: 'active' }] }
+        )
+    }
+
+    run()
+        .then(response => { 
+            res.send({
+                'status': 200,
+                'message': 'Email updated'
+            })
+        })
+        .catch(err => { 
+            res.send({
+                'status': 400,
+                'message': 'Something went wrong!',
+                'error': err
+            })
+        })
+})
 
 
 app.listen(process.env.PORT || 8080, (req, res) => console.log('running on 8080'))
