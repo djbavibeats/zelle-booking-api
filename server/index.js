@@ -29,8 +29,8 @@ const MONGODB_STRING = process.env.MONGODB_STRING
 //     })
 // })
 
-var users = require('../notes/users.json')
-var perks = require('../notes/perks.json')
+// var users = require('../notes/users.json')
+// var perks = require('../notes/perks.json')
 const { ObjectId } = require('bson')
 
 app.get('/admin', (req, res) => {
